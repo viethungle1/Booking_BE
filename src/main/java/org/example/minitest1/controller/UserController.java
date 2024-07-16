@@ -1,7 +1,9 @@
 package org.example.minitest1.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.minitest1.dto.PasswordChangeDto;
+import org.example.minitest1.dto.UserDto;
 import org.example.minitest1.model.JwtResponse;
 import org.example.minitest1.security.jwtService.JwtTokenProvider;
 import org.example.minitest1.model.User;
@@ -14,8 +16,11 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -43,12 +48,24 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<User> register(@RequestBody User user) {
-        return new ResponseEntity<>(userService.createNewUser(user), HttpStatus.CREATED);
+    public ResponseEntity<?> register(@RequestBody @Valid UserDto userDto, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            List<String> errorMessages = new ArrayList<>();
+            for (FieldError error : bindingResult.getFieldErrors()) {
+                errorMessages.add(error.getDefaultMessage());
+            }
+            return ResponseEntity.badRequest().body(errorMessages);
+        }
+        try {
+            userService.createNewUser(userDto);
+            return ResponseEntity.ok("User registered successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 
     @PutMapping("/changePassword/{uId}")
-    public ResponseEntity<?> changePassword(@PathVariable Long uId, @RequestBody PasswordChangeDto passwordChangeDto) {
+    public ResponseEntity<?> changePassword(@Valid @PathVariable Long uId, @RequestBody PasswordChangeDto passwordChangeDto) {
         try {
             userService.changePassword(uId,passwordChangeDto);
             return ResponseEntity.ok("Password changed successfully");

@@ -8,5 +8,5 @@ public interface GeneralService<T> {
 
     T save(T t);
 
-    void remove(Long t);
+    void remove(Long id);
 }

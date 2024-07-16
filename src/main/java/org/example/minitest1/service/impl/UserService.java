@@ -2,6 +2,7 @@ package org.example.minitest1.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.example.minitest1.dto.PasswordChangeDto;
+import org.example.minitest1.dto.UserDto;
 import org.example.minitest1.model.Role;
 import org.example.minitest1.repository.RoleRepository;
 import org.example.minitest1.security.jwtService.UserPrinciple;
@@ -52,11 +53,11 @@ public class UserService implements UserDetailsService, IUserService {
         return userRepository.save(user);
     }
 
-    public User createNewUser(User user) {
+    public void createNewUser(UserDto user) {
         List<User> users = findAll();
         for (User u : users) {
             if (u.getUsername().equals(user.getUsername())) {
-                throw new RuntimeException("Username already exists: " + user.getUsername());
+                throw new RuntimeException("Username already exists");
             }
         }
         User newUser = new User();
@@ -64,7 +65,7 @@ public class UserService implements UserDetailsService, IUserService {
         newUser.setUsername(user.getUsername());
         newUser.setPassword(passwordEncoder.encode(user.getPassword()));
         newUser.setRole(role);
-        return userRepository.save(newUser);
+        userRepository.save(newUser);
     }
 
     public void changePassword(Long id, PasswordChangeDto passwordChangeDto) {
