@@ -1,8 +1,8 @@
 package org.example.minitest1.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.example.minitest1.dto.PasswordChangeDto;
-import org.example.minitest1.dto.UserDto;
+import org.example.minitest1.model.dto.PasswordChangeDto;
+import org.example.minitest1.model.dto.UserDto;
 import org.example.minitest1.model.Role;
 import org.example.minitest1.repository.RoleRepository;
 import org.example.minitest1.security.jwtService.UserPrinciple;
@@ -53,19 +53,18 @@ public class UserService implements UserDetailsService, IUserService {
         return userRepository.save(user);
     }
 
-    public void createNewUser(UserDto user) {
-        List<User> users = findAll();
-        for (User u : users) {
-            if (u.getUsername().equals(user.getUsername())) {
-                throw new RuntimeException("Username already exists");
-            }
+    public void createNewUser(UserDto userDto) {
+        boolean check = userRepository.existsByUsername(userDto.getUsername());
+        if (!check) {
+            User newUser = new User();
+            Role role = roleRepository.findOneByName(ROLE_DEFAULT);
+            newUser.setUsername(userDto.getUsername());
+            newUser.setPassword(passwordEncoder.encode(userDto.getPassword()));
+            newUser.setRole(role);
+            userRepository.save(newUser);
+        } else {
+            throw new RuntimeException("username already exists");
         }
-        User newUser = new User();
-        Role role = roleRepository.findOneByName(ROLE_DEFAULT);
-        newUser.setUsername(user.getUsername());
-        newUser.setPassword(passwordEncoder.encode(user.getPassword()));
-        newUser.setRole(role);
-        userRepository.save(newUser);
     }
 
     public void changePassword(Long id, PasswordChangeDto passwordChangeDto) {

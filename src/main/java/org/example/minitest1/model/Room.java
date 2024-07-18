@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import java.util.Set;
 
 @Entity
 @Data
@@ -22,6 +21,6 @@ public class Room {
     String name;
     String description;
     String floor;
-    @ManyToMany(fetch = FetchType.EAGER)
-    Set<RoomType> roomType;
+    @ManyToOne(fetch = FetchType.EAGER)
+    RoomType roomType;
 }

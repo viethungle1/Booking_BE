@@ -1,5 +1,6 @@
 package org.example.minitest1.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -25,9 +26,12 @@ public class Reservation {
     String guestPhone;
     String guestEmail;
     @CreationTimestamp
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
     Date createdDate;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
+    Date endDate;
     Double price;
     Integer status;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     Room room;
 }

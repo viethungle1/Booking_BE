@@ -2,6 +2,7 @@ package org.example.minitest1.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.example.minitest1.model.RoomType;
+import org.example.minitest1.model.dto.RoomTypeDto;
 import org.example.minitest1.repository.RoomTypeRepository;
 import org.example.minitest1.service.IRoomTypeService;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,31 @@ public class RoomTypeService implements IRoomTypeService {
     @Override
     public RoomType save(RoomType roomType) {
         return roomTypeRepository.save(roomType);
+    }
+
+    public boolean isCheck(RoomTypeDto roomTypeDto) {
+        return roomTypeRepository.existsByCode(roomTypeDto.getCode());
+    }
+
+    public void updateRoomTypeFromDto(RoomType roomType,RoomTypeDto roomTypeDto) {
+        roomType.setCode(roomTypeDto.getCode());
+        roomType.setName(roomTypeDto.getName());
+        roomType.setDescription(roomTypeDto.getDescription());
+        roomType.setSize(roomTypeDto.getSize());
+        roomType.setNumOfBed(roomTypeDto.getNumOfBed());
+        roomType.setMaxAdults(roomTypeDto.getMaxAdults());
+        roomType.setMaxChild(roomTypeDto.getMaxChild());
+    }
+
+    public void createNewRoomType(RoomTypeDto roomTypeDto){
+        boolean check = isCheck(roomTypeDto);
+        if (!check) {
+            RoomType roomType = new RoomType();
+            updateRoomTypeFromDto(roomType, roomTypeDto);
+            roomTypeRepository.save(roomType);
+        } else {
+            throw new RuntimeException("RoomType Code already exist");
+        }
     }
 
     @Override

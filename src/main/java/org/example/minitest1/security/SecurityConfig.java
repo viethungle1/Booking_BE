@@ -3,7 +3,6 @@ package org.example.minitest1.security;
 import lombok.RequiredArgsConstructor;
 import org.example.minitest1.security.jwt.JwtAuthenticationFilter;
 import org.example.minitest1.service.impl.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -57,10 +56,10 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.csrf(AbstractHttpConfigurer::disable).addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.OPTIONS,"/**").permitAll()
-                        .requestMatchers("/login","/register").permitAll()
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .requestMatchers("/login", "/register").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/**").hasAnyAuthority("ROLE_GUEST","ROLE_ADMIN")
                         .requestMatchers("/**").hasAnyAuthority("ROLE_ADMIN")
-                        .requestMatchers(HttpMethod.GET,"/**").hasAnyAuthority("ROLE_GUEST")
                 )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .httpBasic(Customizer.withDefaults())

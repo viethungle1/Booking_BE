@@ -32,4 +32,8 @@ public class ReservationService implements IReservationService {
     public void remove(Long id) {
         reservationRepository.deleteById(id);
     }
+
+//    public void setRoomIdToNull(Long roomId) {
+//        reservationRepository.setRoomToNull(roomId);
+//    }
 }

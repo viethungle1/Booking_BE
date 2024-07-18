@@ -2,8 +2,8 @@ package org.example.minitest1.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.example.minitest1.dto.PasswordChangeDto;
-import org.example.minitest1.dto.UserDto;
+import org.example.minitest1.model.dto.PasswordChangeDto;
+import org.example.minitest1.model.dto.UserDto;
 import org.example.minitest1.model.JwtResponse;
 import org.example.minitest1.security.jwtService.JwtTokenProvider;
 import org.example.minitest1.model.User;
@@ -48,7 +48,9 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody @Valid UserDto userDto, BindingResult bindingResult) {
+    public ResponseEntity<?> register(@RequestBody @Valid UserDto userDto,
+                                      BindingResult bindingResult)
+    {
         if (bindingResult.hasErrors()) {
             List<String> errorMessages = new ArrayList<>();
             for (FieldError error : bindingResult.getFieldErrors()) {
@@ -65,7 +67,16 @@ public class UserController {
     }
 
     @PutMapping("/changePassword/{uId}")
-    public ResponseEntity<?> changePassword(@Valid @PathVariable Long uId, @RequestBody PasswordChangeDto passwordChangeDto) {
+    public ResponseEntity<?> changePassword(@PathVariable Long uId,
+                                            @RequestBody @Valid PasswordChangeDto passwordChangeDto,
+                                            BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            List<String> errorMessages = new ArrayList<>();
+            for (FieldError error : bindingResult.getFieldErrors()) {
+                errorMessages.add(error.getDefaultMessage());
+            }
+            return ResponseEntity.badRequest().body(errorMessages);
+        }
         try {
             userService.changePassword(uId,passwordChangeDto);
             return ResponseEntity.ok("Password changed successfully");
