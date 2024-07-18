@@ -16,11 +16,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -48,16 +45,7 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody @Valid UserDto userDto,
-                                      BindingResult bindingResult)
-    {
-        if (bindingResult.hasErrors()) {
-            List<String> errorMessages = new ArrayList<>();
-            for (FieldError error : bindingResult.getFieldErrors()) {
-                errorMessages.add(error.getDefaultMessage());
-            }
-            return ResponseEntity.badRequest().body(errorMessages);
-        }
+    public ResponseEntity<?> register(@RequestBody @Valid UserDto userDto) {
         try {
             userService.createNewUser(userDto);
             return ResponseEntity.ok("User registered successfully");
@@ -68,15 +56,7 @@ public class UserController {
 
     @PutMapping("/changePassword/{uId}")
     public ResponseEntity<?> changePassword(@PathVariable Long uId,
-                                            @RequestBody @Valid PasswordChangeDto passwordChangeDto,
-                                            BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            List<String> errorMessages = new ArrayList<>();
-            for (FieldError error : bindingResult.getFieldErrors()) {
-                errorMessages.add(error.getDefaultMessage());
-            }
-            return ResponseEntity.badRequest().body(errorMessages);
-        }
+                                            @RequestBody @Valid PasswordChangeDto passwordChangeDto) {
         try {
             userService.changePassword(uId,passwordChangeDto);
             return ResponseEntity.ok("Password changed successfully");

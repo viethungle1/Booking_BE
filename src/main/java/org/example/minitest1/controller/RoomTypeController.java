@@ -8,11 +8,8 @@ import org.example.minitest1.service.impl.RoomService;
 import org.example.minitest1.service.impl.RoomTypeService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -34,15 +31,7 @@ public class RoomTypeController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<?> createRoomType(@RequestBody @Valid RoomTypeDto roomTypeDto,
-                                                   BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            List<String> errorMessages = new ArrayList<>();
-            for (FieldError error : bindingResult.getFieldErrors()) {
-                errorMessages.add(error.getDefaultMessage());
-            }
-            return ResponseEntity.badRequest().body(errorMessages);
-        }
+    public ResponseEntity<?> createRoomType(@RequestBody @Valid RoomTypeDto roomTypeDto) {
         try {
             roomTypeService.createNewRoomType(roomTypeDto);
             return ResponseEntity.ok("RoomType created successfully");
@@ -53,15 +42,7 @@ public class RoomTypeController {
 
     @PutMapping("/update/{id}")
     public ResponseEntity<?> updateRoomType(@PathVariable Long id,
-                                            @RequestBody @Valid RoomTypeDto roomTypeDto,
-                                            BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            List<String> errorMessages = new ArrayList<>();
-            for (FieldError error : bindingResult.getFieldErrors()) {
-                errorMessages.add(error.getDefaultMessage());
-            }
-            return ResponseEntity.badRequest().body(errorMessages);
-        }
+                                            @RequestBody @Valid RoomTypeDto roomTypeDto) {
         RoomType roomType = roomTypeService.findById(id);
         if (roomType == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("RoomType not found");

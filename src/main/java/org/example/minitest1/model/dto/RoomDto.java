@@ -1,29 +1,27 @@
 package org.example.minitest1.model.dto;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.example.minitest1.model.RoomType;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class RoomDto {
-    public static final String NOT_EMPTY_MESSAGE = "đang để trống";
-    @NotBlank(message = "Code "+NOT_EMPTY_MESSAGE)
+    @NotBlank(message = "Code đang để trống")
     String code;
-    @NotBlank(message = "Tên "+NOT_EMPTY_MESSAGE)
+
+    @NotBlank(message = "Tên đang để trống")
     String name;
-    @NotBlank(message = "Mô tả "+NOT_EMPTY_MESSAGE)
+
+    @NotBlank(message = "Mô tả đang để trống")
     String description;
-    @NotBlank(message = "Sàn "+NOT_EMPTY_MESSAGE)
+
+    @NotBlank(message = "Sàn đang để trống")
     String floor;
+
     @NotNull(message = "Chưa chọn loại phòng")
     RoomType roomType;
 }

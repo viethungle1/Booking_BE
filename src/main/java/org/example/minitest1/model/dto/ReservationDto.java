@@ -1,43 +1,44 @@
 package org.example.minitest1.model.dto;
 
-import jakarta.validation.constraints.AssertTrue;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.*;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
+import org.example.minitest1.model.Room;
 
-import java.util.Date;
+import java.time.LocalDateTime;
+
 
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ReservationDto {
-    @NotBlank
+    @NotBlank(message = "Code đang để trống")
     String code;
-    @NotBlank
-    String guestName;
-    @NotBlank
-    String guestIdNo;
-    @NotBlank
-    String guestPhone;
-    @NotBlank
-    String guestEmail;
-    @NotNull(message = "Created date is required")
-    Date createdDate;
-    @NotNull(message = "End date is required")
-    Date endDate;
-    @NotBlank
-    Double price;
-    @NotBlank
-    Integer status;
-    @NotNull
-    Long roomId;
 
-    @AssertTrue(message = "End date must be after or equal to the created date")
-    public boolean isEndDateValid() {
-        if (createdDate == null || endDate == null) {
-            return true;
-        }
-        return !endDate.before(createdDate);
-    }
+    @NotBlank(message = "Tên khách đang để trống")
+    String guestName;
+
+    @NotBlank(message = "Id khách đang để trống")
+    String guestIdNo;
+
+    @NotBlank(message = "Điện thoại đang để trống")
+    String guestPhone;
+
+    @NotBlank(message = "Email đang để trống")
+    String guestEmail;
+
+    @NotNull(message = "Thời gian đặt phòng đang để trống")
+    LocalDateTime createdDate;
+
+    @NotNull(message = "Thời gian trả phòng đang để trống")
+    LocalDateTime endDate;
+
+    @Min(value = 1, message = "Size phải lớn hơn 0")
+    Double price;
+
+    @Min(value = 1, message = "Size phải lớn hơn 0")
+    Integer status;
+
+    @NotNull(message = "Chưa chọn phòng")
+    Room room;
 }
