@@ -37,13 +37,7 @@ public class RoomTypeService implements IRoomTypeService {
     }
 
     public void updateRoomTypeFromDto(RoomType roomType,RoomTypeSaveRequest roomTypeSaveRequest) {
-        roomType.setCode(roomTypeSaveRequest.getCode());
-        roomType.setName(roomTypeSaveRequest.getName());
-        roomType.setDescription(roomTypeSaveRequest.getDescription());
-        roomType.setSize(roomTypeSaveRequest.getSize());
-        roomType.setNumOfBed(roomTypeSaveRequest.getNumOfBed());
-        roomType.setMaxAdults(roomTypeSaveRequest.getMaxAdults());
-        roomType.setMaxChild(roomTypeSaveRequest.getMaxChild());
+        roomTypeMapper.updateRoomType(roomTypeSaveRequest, roomType);
     }
 
     public void createNewRoomType(RoomTypeSaveRequest roomTypeSaveRequest){

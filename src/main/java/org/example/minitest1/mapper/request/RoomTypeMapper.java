@@ -4,8 +4,11 @@ import org.example.minitest1.dto.request.roomtype.RoomTypeSaveRequest;
 import org.example.minitest1.mapper.IMapper;
 import org.example.minitest1.model.RoomType;
 import org.mapstruct.Mapper;
+import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
 public interface RoomTypeMapper extends IMapper<RoomType, RoomTypeSaveRequest> {
+    void updateRoomType(RoomTypeSaveRequest dto, @MappingTarget RoomType entity);
 
 }
+

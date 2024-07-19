@@ -37,10 +37,7 @@ public class RoomService implements IRoomService {
     }
 
     public void updateRoomFromDto(Room room,RoomSaveRequest roomSaveRequest) {
-        room.setCode(roomSaveRequest.getCode());
-        room.setName(roomSaveRequest.getName());
-        room.setDescription(roomSaveRequest.getDescription());
-        room.setFloor(roomSaveRequest.getFloor());
+        roomMapper.updateRoom(roomSaveRequest, room);
         room.setRoomType(roomTypeService.findById(roomSaveRequest.getRoomTypeId()));
     }
 
