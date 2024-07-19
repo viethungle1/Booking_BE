@@ -53,15 +53,7 @@ public class ReservationService implements IReservationService {
     }
 
     public void updateReservationFromDto(Reservation reservation, ReservationSaveRequest reservationSaveRequest) {
-        reservation.setCode(reservationSaveRequest.getCode());
-        reservation.setGuestName(reservationSaveRequest.getGuestName());
-        reservation.setGuestIdNo(reservationSaveRequest.getGuestIdNo());
-        reservation.setGuestPhone(reservationSaveRequest.getGuestPhone());
-        reservation.setGuestEmail(reservationSaveRequest.getGuestEmail());
-        reservation.setCreatedDate(reservationSaveRequest.getCreatedDate());
-        reservation.setEndDate(reservationSaveRequest.getEndDate());
-        reservation.setPrice(reservationSaveRequest.getPrice());
-        reservation.setStatus(reservationSaveRequest.getStatus());
+        reservationMapper.updateReservation(reservationSaveRequest, reservation);
         Room room = roomRepository.findById(reservationSaveRequest.getRoomId()).orElse(null);
         reservation.setRoom(room);
     }
