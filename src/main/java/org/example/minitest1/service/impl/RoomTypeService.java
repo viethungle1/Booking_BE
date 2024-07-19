@@ -1,11 +1,13 @@
 package org.example.minitest1.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.example.minitest1.mapper.request.RoomTypeMapper;
 import org.example.minitest1.model.RoomType;
-import org.example.minitest1.model.dto.RoomTypeDto;
+import org.example.minitest1.dto.request.roomtype.RoomTypeSaveRequest;
 import org.example.minitest1.repository.RoomTypeRepository;
 import org.example.minitest1.service.IRoomTypeService;
 import org.springframework.stereotype.Service;
+
 
 import java.util.List;
 
@@ -13,6 +15,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class RoomTypeService implements IRoomTypeService {
     private final RoomTypeRepository roomTypeRepository;
+    private final RoomTypeMapper roomTypeMapper;
 
     @Override
     public List<RoomType> findAll() {
@@ -29,25 +32,24 @@ public class RoomTypeService implements IRoomTypeService {
         return roomTypeRepository.save(roomType);
     }
 
-    public boolean isCheck(RoomTypeDto roomTypeDto) {
-        return roomTypeRepository.existsByCode(roomTypeDto.getCode());
+    public boolean isCheck(RoomTypeSaveRequest roomTypeSaveRequest) {
+        return roomTypeRepository.existsByCode(roomTypeSaveRequest.getCode());
     }
 
-    public void updateRoomTypeFromDto(RoomType roomType,RoomTypeDto roomTypeDto) {
-        roomType.setCode(roomTypeDto.getCode());
-        roomType.setName(roomTypeDto.getName());
-        roomType.setDescription(roomTypeDto.getDescription());
-        roomType.setSize(roomTypeDto.getSize());
-        roomType.setNumOfBed(roomTypeDto.getNumOfBed());
-        roomType.setMaxAdults(roomTypeDto.getMaxAdults());
-        roomType.setMaxChild(roomTypeDto.getMaxChild());
+    public void updateRoomTypeFromDto(RoomType roomType,RoomTypeSaveRequest roomTypeSaveRequest) {
+        roomType.setCode(roomTypeSaveRequest.getCode());
+        roomType.setName(roomTypeSaveRequest.getName());
+        roomType.setDescription(roomTypeSaveRequest.getDescription());
+        roomType.setSize(roomTypeSaveRequest.getSize());
+        roomType.setNumOfBed(roomTypeSaveRequest.getNumOfBed());
+        roomType.setMaxAdults(roomTypeSaveRequest.getMaxAdults());
+        roomType.setMaxChild(roomTypeSaveRequest.getMaxChild());
     }
 
-    public void createNewRoomType(RoomTypeDto roomTypeDto){
-        boolean check = isCheck(roomTypeDto);
+    public void createNewRoomType(RoomTypeSaveRequest roomTypeSaveRequest){
+        boolean check = isCheck(roomTypeSaveRequest);
         if (!check) {
-            RoomType roomType = new RoomType();
-            updateRoomTypeFromDto(roomType, roomTypeDto);
+            RoomType roomType = roomTypeMapper.to(roomTypeSaveRequest);
             roomTypeRepository.save(roomType);
         } else {
             throw new RuntimeException("RoomType Code already exist");

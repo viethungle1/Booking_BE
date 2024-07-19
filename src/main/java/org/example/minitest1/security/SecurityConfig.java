@@ -1,6 +1,7 @@
 package org.example.minitest1.security;
 
 import lombok.RequiredArgsConstructor;
+import org.example.minitest1.enumtype.RoleType;
 import org.example.minitest1.security.jwt.JwtAuthenticationFilter;
 import org.example.minitest1.service.impl.UserService;
 import org.springframework.context.annotation.Bean;
@@ -58,8 +59,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/login", "/register").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/**").hasAnyAuthority("ROLE_GUEST","ROLE_ADMIN")
-                        .requestMatchers("/**").hasAnyAuthority("ROLE_ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/**").hasAnyAuthority(RoleType.ROLE_GUEST.getName(),RoleType.ROLE_ADMIN.getName())
+                        .requestMatchers("/**").hasAnyAuthority(RoleType.ROLE_ADMIN.getName())
                 )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .httpBasic(Customizer.withDefaults())

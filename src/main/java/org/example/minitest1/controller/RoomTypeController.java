@@ -3,7 +3,7 @@ package org.example.minitest1.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.minitest1.model.RoomType;
-import org.example.minitest1.model.dto.RoomTypeDto;
+import org.example.minitest1.dto.request.roomtype.RoomTypeSaveRequest;
 import org.example.minitest1.service.impl.RoomService;
 import org.example.minitest1.service.impl.RoomTypeService;
 import org.springframework.http.HttpStatus;
@@ -31,9 +31,9 @@ public class RoomTypeController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<?> createRoomType(@RequestBody @Valid RoomTypeDto roomTypeDto) {
+    public ResponseEntity<?> createRoomType(@RequestBody @Valid RoomTypeSaveRequest roomTypeSaveRequest) {
         try {
-            roomTypeService.createNewRoomType(roomTypeDto);
+            roomTypeService.createNewRoomType(roomTypeSaveRequest);
             return ResponseEntity.ok("RoomType created successfully");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
@@ -42,15 +42,15 @@ public class RoomTypeController {
 
     @PutMapping("/update/{id}")
     public ResponseEntity<?> updateRoomType(@PathVariable Long id,
-                                            @RequestBody @Valid RoomTypeDto roomTypeDto) {
+                                            @RequestBody @Valid RoomTypeSaveRequest roomTypeSaveRequest) {
         RoomType roomType = roomTypeService.findById(id);
         if (roomType == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("RoomType not found");
         }
-        if (!roomTypeDto.getCode().equals(roomType.getCode()) && roomTypeService.isCheck(roomTypeDto) ) {
+        if (!roomTypeSaveRequest.getCode().equals(roomType.getCode()) && roomTypeService.isCheck(roomTypeSaveRequest) ) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("RoomType code already exists");
         }
-        roomTypeService.updateRoomTypeFromDto(roomType, roomTypeDto);
+        roomTypeService.updateRoomTypeFromDto(roomType, roomTypeSaveRequest);
         roomTypeService.save(roomType);
         return ResponseEntity.ok("RoomType updated successfully");
     }

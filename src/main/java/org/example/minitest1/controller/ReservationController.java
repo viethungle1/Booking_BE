@@ -3,7 +3,7 @@ package org.example.minitest1.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.minitest1.model.Reservation;
-import org.example.minitest1.model.dto.ReservationDto;
+import org.example.minitest1.dto.request.reservation.ReservationSaveRequest;
 import org.example.minitest1.service.impl.ReservationService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,9 +29,9 @@ public class ReservationController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<?> create(@RequestBody @Valid ReservationDto reservationDto) {
+    public ResponseEntity<?> create(@RequestBody @Valid ReservationSaveRequest reservationSaveRequest) {
         try {
-            reservationService.createReservation(reservationDto);
+            reservationService.createReservation(reservationSaveRequest);
             return ResponseEntity.ok("Room created successfully");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
@@ -39,15 +39,15 @@ public class ReservationController {
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody @Valid ReservationDto reservationDto) {
+    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody @Valid ReservationSaveRequest reservationSaveRequest) {
         Reservation reservation = reservationService.findById(id);
         if (reservation == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Reservation not found");
         }
-        if (reservationDto.getEndDate().isBefore(reservationDto.getCreatedDate())) {
-            throw new RuntimeException("End date must be after or equal to the start date");
+        if (reservationSaveRequest.getEndDate().isBefore(reservationSaveRequest.getCreatedDate())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("End date must be after or equal to the start date");
         }
-        reservationService.updateReservationFromDto(reservation, reservationDto);
+        reservationService.updateReservationFromDto(reservation, reservationSaveRequest);
         reservationService.save(reservation);
         return ResponseEntity.ok("Reservation updated successfully");
     }

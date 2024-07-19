@@ -1,17 +1,16 @@
-package org.example.minitest1.model.dto;
+package org.example.minitest1.dto.request.reservation;
 
 import jakarta.validation.constraints.*;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
-import org.example.minitest1.model.Room;
 
 import java.time.LocalDateTime;
 
 
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ReservationDto {
+public class ReservationSaveRequest {
     @NotBlank(message = "Code đang để trống")
     String code;
 
@@ -39,6 +38,5 @@ public class ReservationDto {
     @Min(value = 1, message = "Size phải lớn hơn 0")
     Integer status;
 
-    @NotNull(message = "Chưa chọn phòng")
-    Room room;
+    Long roomId;
 }

@@ -1,9 +1,12 @@
 package org.example.minitest1.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.example.minitest1.mapper.request.ReservationMapper;
 import org.example.minitest1.model.Reservation;
-import org.example.minitest1.model.dto.ReservationDto;
+import org.example.minitest1.dto.request.reservation.ReservationSaveRequest;
+import org.example.minitest1.model.Room;
 import org.example.minitest1.repository.ReservationRepository;
+import org.example.minitest1.repository.RoomRepository;
 import org.example.minitest1.service.IReservationService;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +17,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ReservationService implements IReservationService {
     private final ReservationRepository reservationRepository;
+    private final RoomRepository roomRepository;
+    private final ReservationMapper reservationMapper;
+    private final RoomService roomService;
 
     @Override
     public List<Reservation> findAll() {
@@ -30,34 +36,34 @@ public class ReservationService implements IReservationService {
         return reservationRepository.save(reservation);
     }
 
-    public void createReservation(ReservationDto reservationDto) {
-        boolean isConflict = checkTimeBooking(reservationDto.getRoom().getId(),
-                reservationDto.getCreatedDate(),
-                reservationDto.getEndDate());
-        if (reservationDto.getEndDate().isBefore(reservationDto.getCreatedDate())) {
+    public void createReservation(ReservationSaveRequest reservationSaveRequest) {
+        boolean isConflict = checkTimeBooking(reservationSaveRequest.getRoomId(),
+                reservationSaveRequest.getCreatedDate(),
+                reservationSaveRequest.getEndDate());
+        if (reservationSaveRequest.getEndDate().isBefore(reservationSaveRequest.getCreatedDate())) {
            throw new RuntimeException("End date must be after or equal to the start date");
         }
         if (!isConflict) {
-            Reservation reservation = new Reservation();
-            Reservation reservation1 = updateReservationFromDto(reservation,reservationDto);
-            reservationRepository.save(reservation1);
+            Reservation reservation = reservationMapper.to(reservationSaveRequest);
+            reservation.setRoom(roomService.findById(reservationSaveRequest.getRoomId()));
+            reservationRepository.save(reservation);
         } else {
             throw new RuntimeException("Room has been booked");
         }
     }
 
-    public Reservation updateReservationFromDto(Reservation reservation,ReservationDto reservationDto) {
-        reservation.setCode(reservationDto.getCode());
-        reservation.setGuestName(reservationDto.getGuestName());
-        reservation.setGuestIdNo(reservationDto.getGuestIdNo());
-        reservation.setGuestPhone(reservationDto.getGuestPhone());
-        reservation.setGuestEmail(reservationDto.getGuestEmail());
-        reservation.setCreatedDate(reservationDto.getCreatedDate());
-        reservation.setEndDate(reservationDto.getEndDate());
-        reservation.setPrice(reservationDto.getPrice());
-        reservation.setStatus(reservationDto.getStatus());
-        reservation.setRoom(reservationDto.getRoom());
-        return reservation;
+    public void updateReservationFromDto(Reservation reservation, ReservationSaveRequest reservationSaveRequest) {
+        reservation.setCode(reservationSaveRequest.getCode());
+        reservation.setGuestName(reservationSaveRequest.getGuestName());
+        reservation.setGuestIdNo(reservationSaveRequest.getGuestIdNo());
+        reservation.setGuestPhone(reservationSaveRequest.getGuestPhone());
+        reservation.setGuestEmail(reservationSaveRequest.getGuestEmail());
+        reservation.setCreatedDate(reservationSaveRequest.getCreatedDate());
+        reservation.setEndDate(reservationSaveRequest.getEndDate());
+        reservation.setPrice(reservationSaveRequest.getPrice());
+        reservation.setStatus(reservationSaveRequest.getStatus());
+        Room room = roomRepository.findById(reservationSaveRequest.getRoomId()).orElse(null);
+        reservation.setRoom(room);
     }
 
     @Override

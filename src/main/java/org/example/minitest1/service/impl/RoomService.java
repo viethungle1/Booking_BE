@@ -1,8 +1,9 @@
 package org.example.minitest1.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.example.minitest1.mapper.request.RoomMapper;
 import org.example.minitest1.model.Room;
-import org.example.minitest1.model.dto.RoomDto;
+import org.example.minitest1.dto.request.room.RoomSaveRequest;
 import org.example.minitest1.repository.RoomRepository;
 import org.example.minitest1.service.IRoomService;
 import org.springframework.stereotype.Service;
@@ -13,6 +14,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class RoomService implements IRoomService {
     private final RoomRepository roomRepository;
+    private final RoomMapper roomMapper;
+    private final RoomTypeService roomTypeService;
 
     @Override
     public List<Room> findAll() {
@@ -29,23 +32,23 @@ public class RoomService implements IRoomService {
         return roomRepository.save(room);
     }
 
-    public boolean isCheck(RoomDto roomDto) {
+    public boolean isCheck(RoomSaveRequest roomDto) {
         return roomRepository.existsByCode(roomDto.getCode());
     }
 
-    public void updateRoomFromDto(Room room,RoomDto roomDto) {
-        room.setCode(roomDto.getCode());
-        room.setName(roomDto.getName());
-        room.setDescription(roomDto.getDescription());
-        room.setFloor(roomDto.getFloor());
-        room.setRoomType(roomDto.getRoomType());
+    public void updateRoomFromDto(Room room,RoomSaveRequest roomSaveRequest) {
+        room.setCode(roomSaveRequest.getCode());
+        room.setName(roomSaveRequest.getName());
+        room.setDescription(roomSaveRequest.getDescription());
+        room.setFloor(roomSaveRequest.getFloor());
+        room.setRoomType(roomTypeService.findById(roomSaveRequest.getRoomTypeId()));
     }
 
-    public void createNewRoom(RoomDto roomDto){
-        boolean check = isCheck(roomDto);
+    public void createNewRoom(RoomSaveRequest roomSaveRequest){
+        boolean check = isCheck(roomSaveRequest);
         if (!check) {
-            Room room = new Room();
-            updateRoomFromDto(room,roomDto);
+            Room room = roomMapper.to(roomSaveRequest);
+            room.setRoomType(roomTypeService.findById(roomSaveRequest.getRoomTypeId()));
             roomRepository.save(room);
         } else {
             throw new RuntimeException("Room Code already exist");

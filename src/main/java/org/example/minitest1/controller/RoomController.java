@@ -3,7 +3,7 @@ package org.example.minitest1.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.minitest1.model.Room;
-import org.example.minitest1.model.dto.RoomDto;
+import org.example.minitest1.dto.request.room.RoomSaveRequest;
 import org.example.minitest1.service.impl.ReservationService;
 import org.example.minitest1.service.impl.RoomService;
 import org.springframework.http.HttpStatus;
@@ -30,9 +30,9 @@ public class RoomController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<?> createRoom(@RequestBody @Valid RoomDto roomDto) {
+    public ResponseEntity<?> createRoom(@RequestBody @Valid RoomSaveRequest roomSaveRequest) {
         try {
-            roomService.createNewRoom(roomDto);
+            roomService.createNewRoom(roomSaveRequest);
             return ResponseEntity.ok("Room created successfully");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
@@ -41,15 +41,15 @@ public class RoomController {
 
     @PutMapping("/update/{id}")
     public ResponseEntity<?> updateRoom(@PathVariable Long id,
-                                        @RequestBody @Valid RoomDto roomDto) {
+                                        @RequestBody @Valid RoomSaveRequest roomSaveRequest) {
         Room room = roomService.findById(id);
         if (room == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Room not found");
         }
-        if (!room.getCode().equals(roomDto.getCode()) && roomService.isCheck(roomDto)) {
+        if (!room.getCode().equals(roomSaveRequest.getCode()) && roomService.isCheck(roomSaveRequest)) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Room code already exists");
         }
-        roomService.updateRoomFromDto(room,roomDto);
+        roomService.updateRoomFromDto(room,roomSaveRequest);
         roomService.save(room);
         return ResponseEntity.ok("Room updated successfully");
     }

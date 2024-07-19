@@ -1,4 +1,4 @@
-package org.example.minitest1.model.dto;
+package org.example.minitest1.dto.request.user;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
@@ -12,9 +12,12 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class PasswordChangeDto {
-    String currentPassword;
+public class UserSaveRequest {
     @NotEmpty(message = "Chưa nhập password")
-    @Pattern(regexp = "^.{6,}$", message = "Password phải từ 8 kí tự trở lên")
-    String newPassword;
+    @Pattern(regexp = "^[a-zA-Z0-9]{6,}$", message = "Username phải từ 6 kí tự trở lên")
+    String username;
+
+    @NotEmpty(message = "Chưa nhập password")
+    @Pattern(regexp = "^.{6,}$", message = "Password phải từ 6 kí tự trở lên")
+    String password;
 }

@@ -1,4 +1,4 @@
-package org.example.minitest1.model.dto;
+package org.example.minitest1.dto.request.roomtype;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -8,7 +8,7 @@ import lombok.experimental.FieldDefaults;
 
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class RoomTypeDto {
+public class RoomTypeSaveRequest {
     @NotBlank(message = "Code đang để trống")
     String code;
 

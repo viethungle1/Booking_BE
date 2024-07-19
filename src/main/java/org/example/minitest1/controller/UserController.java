@@ -2,8 +2,8 @@ package org.example.minitest1.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.example.minitest1.model.dto.PasswordChangeDto;
-import org.example.minitest1.model.dto.UserDto;
+import org.example.minitest1.dto.request.user.PasswordChangeSaveRequest;
+import org.example.minitest1.dto.request.user.UserSaveRequest;
 import org.example.minitest1.model.JwtResponse;
 import org.example.minitest1.security.jwtService.JwtTokenProvider;
 import org.example.minitest1.model.User;
@@ -45,9 +45,9 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody @Valid UserDto userDto) {
+    public ResponseEntity<?> register(@RequestBody @Valid UserSaveRequest userSaveRequest) {
         try {
-            userService.createNewUser(userDto);
+            userService.createNewUser(userSaveRequest);
             return ResponseEntity.ok("User registered successfully");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
@@ -56,9 +56,9 @@ public class UserController {
 
     @PutMapping("/changePassword/{uId}")
     public ResponseEntity<?> changePassword(@PathVariable Long uId,
-                                            @RequestBody @Valid PasswordChangeDto passwordChangeDto) {
+                                            @RequestBody @Valid PasswordChangeSaveRequest passwordChangeSaveRequest) {
         try {
-            userService.changePassword(uId,passwordChangeDto);
+            userService.changePassword(uId, passwordChangeSaveRequest);
             return ResponseEntity.ok("Password changed successfully");
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
