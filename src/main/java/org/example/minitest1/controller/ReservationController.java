@@ -31,8 +31,7 @@ public class ReservationController {
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody @Valid ReservationSaveRequest reservationSaveRequest) {
         try {
-            reservationService.createReservation(reservationSaveRequest);
-            return ResponseEntity.ok("Room created successfully");
+            return new ResponseEntity<>(reservationService.create(reservationSaveRequest),HttpStatus.CREATED);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
@@ -40,16 +39,11 @@ public class ReservationController {
 
     @PutMapping("/update/{id}")
     public ResponseEntity<?> update(@PathVariable Long id, @RequestBody @Valid ReservationSaveRequest reservationSaveRequest) {
-        Reservation reservation = reservationService.findById(id);
-        if (reservation == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Reservation not found");
+        try {
+            return new ResponseEntity<>(reservationService.update(id, reservationSaveRequest),HttpStatus.OK);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
-        if (reservationSaveRequest.getEndDate().isBefore(reservationSaveRequest.getCreatedDate())) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("End date must be after or equal to the start date");
-        }
-        reservationService.updateReservationFromDto(reservation, reservationSaveRequest);
-        reservationService.save(reservation);
-        return ResponseEntity.ok("Reservation updated successfully");
     }
 
     @DeleteMapping("/delete/{id}")

@@ -4,7 +4,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.minitest1.model.Room;
 import org.example.minitest1.dto.request.room.RoomSaveRequest;
-import org.example.minitest1.service.impl.ReservationService;
 import org.example.minitest1.service.impl.RoomService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +15,6 @@ import java.util.List;
 @RequestMapping("/room")
 @RequiredArgsConstructor
 public class RoomController {
-    private final ReservationService reservationService;
     private final RoomService roomService;
 
     @GetMapping
@@ -32,31 +30,23 @@ public class RoomController {
     @PostMapping("/create")
     public ResponseEntity<?> createRoom(@RequestBody @Valid RoomSaveRequest roomSaveRequest) {
         try {
-            roomService.createNewRoom(roomSaveRequest);
-            return ResponseEntity.ok("Room created successfully");
+            return new ResponseEntity<>(roomService.create(roomSaveRequest),HttpStatus.CREATED);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<?> updateRoom(@PathVariable Long id,
-                                        @RequestBody @Valid RoomSaveRequest roomSaveRequest) {
-        Room room = roomService.findById(id);
-        if (room == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Room not found");
+    public ResponseEntity<?> updateRoom(@PathVariable Long id, @RequestBody @Valid RoomSaveRequest roomSaveRequest) {
+        try {
+            return new ResponseEntity<>(roomService.update(id, roomSaveRequest),HttpStatus.OK);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
-        if (!room.getCode().equals(roomSaveRequest.getCode()) && roomService.isCheck(roomSaveRequest)) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Room code already exists");
-        }
-        roomService.updateRoomFromDto(room,roomSaveRequest);
-        roomService.save(room);
-        return ResponseEntity.ok("Room updated successfully");
     }
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> deleteRoom(@PathVariable Long id) {
-        reservationService.setRoomIdToNull(id);
         roomService.remove(id);
         return ResponseEntity.ok("Room deleted successfully");
     }

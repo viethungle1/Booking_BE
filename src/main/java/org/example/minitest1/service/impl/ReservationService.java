@@ -4,9 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.minitest1.mapper.request.ReservationMapper;
 import org.example.minitest1.model.Reservation;
 import org.example.minitest1.dto.request.reservation.ReservationSaveRequest;
-import org.example.minitest1.model.Room;
 import org.example.minitest1.repository.ReservationRepository;
-import org.example.minitest1.repository.RoomRepository;
 import org.example.minitest1.service.IReservationService;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +15,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ReservationService implements IReservationService {
     private final ReservationRepository reservationRepository;
-    private final RoomRepository roomRepository;
     private final ReservationMapper reservationMapper;
     private final RoomService roomService;
 
@@ -36,35 +33,37 @@ public class ReservationService implements IReservationService {
         return reservationRepository.save(reservation);
     }
 
-    public void createReservation(ReservationSaveRequest reservationSaveRequest) {
+    @Override
+    public Reservation create(ReservationSaveRequest reservationSaveRequest) {
         boolean isConflict = checkTimeBooking(reservationSaveRequest.getRoomId(),
                 reservationSaveRequest.getCreatedDate(),
                 reservationSaveRequest.getEndDate());
         if (reservationSaveRequest.getEndDate().isBefore(reservationSaveRequest.getCreatedDate())) {
            throw new RuntimeException("End date must be after or equal to the start date");
         }
-        if (!isConflict) {
+        if (isConflict) {
+            throw new RuntimeException("Room has been booked");
+        } else {
             Reservation reservation = reservationMapper.to(reservationSaveRequest);
             reservation.setRoom(roomService.findById(reservationSaveRequest.getRoomId()));
-            reservationRepository.save(reservation);
-        } else {
-            throw new RuntimeException("Room has been booked");
+            return reservationRepository.save(reservation);
         }
     }
 
-    public void updateReservationFromDto(Reservation reservation, ReservationSaveRequest reservationSaveRequest) {
-        reservationMapper.updateReservation(reservationSaveRequest, reservation);
-        Room room = roomRepository.findById(reservationSaveRequest.getRoomId()).orElse(null);
-        reservation.setRoom(room);
+    @Override
+    public Reservation update(Long id, ReservationSaveRequest reservationSaveRequest) {
+        Reservation reservationToUpdate = findById(id);
+        if (reservationSaveRequest.getEndDate().isBefore(reservationSaveRequest.getCreatedDate())) {
+            throw new RuntimeException("Reservation code already exists");
+        }
+        reservationMapper.update(reservationSaveRequest, reservationToUpdate);
+        reservationToUpdate.setRoom(roomService.findById(reservationSaveRequest.getRoomId()));
+        return reservationRepository.save(reservationToUpdate);
     }
 
     @Override
     public void remove(Long id) {
         reservationRepository.deleteById(id);
-    }
-
-    public void setRoomIdToNull(Long roomId) {
-        reservationRepository.setRoomToNull(roomId);
     }
 
     public boolean checkTimeBooking(Long id, LocalDateTime startDate, LocalDateTime endDate) {

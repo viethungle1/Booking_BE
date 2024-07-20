@@ -4,8 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.example.minitest1.mapper.request.RoomTypeMapper;
 import org.example.minitest1.model.RoomType;
 import org.example.minitest1.dto.request.roomtype.RoomTypeSaveRequest;
+import org.example.minitest1.repository.RoomRepository;
 import org.example.minitest1.repository.RoomTypeRepository;
 import org.example.minitest1.service.IRoomTypeService;
+
 import org.springframework.stereotype.Service;
 
 
@@ -14,6 +16,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class RoomTypeService implements IRoomTypeService {
+    private final RoomRepository roomRepository;
     private final RoomTypeRepository roomTypeRepository;
     private final RoomTypeMapper roomTypeMapper;
 
@@ -32,26 +35,34 @@ public class RoomTypeService implements IRoomTypeService {
         return roomTypeRepository.save(roomType);
     }
 
-    public boolean isCheck(RoomTypeSaveRequest roomTypeSaveRequest) {
+    public boolean validationRoomTypeCode(RoomTypeSaveRequest roomTypeSaveRequest) {
         return roomTypeRepository.existsByCode(roomTypeSaveRequest.getCode());
     }
 
-    public void updateRoomTypeFromDto(RoomType roomType,RoomTypeSaveRequest roomTypeSaveRequest) {
-        roomTypeMapper.updateRoomType(roomTypeSaveRequest, roomType);
-    }
-
-    public void createNewRoomType(RoomTypeSaveRequest roomTypeSaveRequest){
-        boolean check = isCheck(roomTypeSaveRequest);
-        if (!check) {
-            RoomType roomType = roomTypeMapper.to(roomTypeSaveRequest);
-            roomTypeRepository.save(roomType);
-        } else {
+    @Override
+    public RoomType create(RoomTypeSaveRequest roomTypeSaveRequest){
+        boolean check = validationRoomTypeCode(roomTypeSaveRequest);
+        if (check) {
             throw new RuntimeException("RoomType Code already exist");
+        } else {
+            RoomType roomType = roomTypeMapper.to(roomTypeSaveRequest);
+            return roomTypeRepository.save(roomType);
         }
     }
 
     @Override
+    public RoomType update(Long id, RoomTypeSaveRequest roomTypeSaveRequest) {
+        RoomType roomTypeToUpdate = findById(id);
+        if (!roomTypeSaveRequest.getCode().equals(roomTypeToUpdate.getCode()) && validationRoomTypeCode(roomTypeSaveRequest) ) {
+            throw new RuntimeException("RoomType code already exists");
+        }
+        roomTypeMapper.update(roomTypeSaveRequest, roomTypeToUpdate);
+        return roomTypeRepository.save(roomTypeToUpdate);
+    }
+
+    @Override
     public void remove(Long id) {
+        roomRepository.setRoomTypeToNull(id);
         roomTypeRepository.deleteById(id);
     }
 }
