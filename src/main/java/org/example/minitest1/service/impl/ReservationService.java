@@ -1,7 +1,9 @@
 package org.example.minitest1.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.example.minitest1.mapper.request.ReservationMapper;
+import org.example.minitest1.dto.response.ReservationResponse;
+import org.example.minitest1.mapper.request.ReservationRequestMapper;
+import org.example.minitest1.mapper.response.ReservationResponseMapper;
 import org.example.minitest1.model.Reservation;
 import org.example.minitest1.dto.request.reservation.ReservationSaveRequest;
 import org.example.minitest1.repository.ReservationRepository;
@@ -15,17 +17,19 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ReservationService implements IReservationService {
     private final ReservationRepository reservationRepository;
-    private final ReservationMapper reservationMapper;
+    private final ReservationRequestMapper reservationRequestMapper;
     private final RoomService roomService;
+    private final ReservationResponseMapper reservationResponseMapper;
 
     @Override
-    public List<Reservation> findAll() {
-        return reservationRepository.findAll();
+    public List<ReservationResponse> findAll() {
+        List<Reservation> reservations = reservationRepository.findAll();
+        return reservationResponseMapper.toReservationResponseList(reservations);
     }
 
     @Override
     public Reservation findById(Long id) {
-        return reservationRepository.findById(id).orElse(null);
+        return reservationRepository.findById(id).orElseThrow(() -> new RuntimeException("Reservation not found"));
     }
 
     @Override
@@ -44,9 +48,9 @@ public class ReservationService implements IReservationService {
         if (isConflict) {
             throw new RuntimeException("Room has been booked");
         } else {
-            Reservation reservation = reservationMapper.to(reservationSaveRequest);
+            Reservation reservation = reservationRequestMapper.to(reservationSaveRequest);
             reservation.setRoom(roomService.findById(reservationSaveRequest.getRoomId()));
-            return reservationRepository.save(reservation);
+            return save(reservation);
         }
     }
 
@@ -56,9 +60,9 @@ public class ReservationService implements IReservationService {
         if (reservationSaveRequest.getEndDate().isBefore(reservationSaveRequest.getCreatedDate())) {
             throw new RuntimeException("Reservation code already exists");
         }
-        reservationMapper.update(reservationSaveRequest, reservationToUpdate);
+        reservationRequestMapper.mapping(reservationSaveRequest, reservationToUpdate);
         reservationToUpdate.setRoom(roomService.findById(reservationSaveRequest.getRoomId()));
-        return reservationRepository.save(reservationToUpdate);
+        return save(reservationToUpdate);
     }
 
     @Override

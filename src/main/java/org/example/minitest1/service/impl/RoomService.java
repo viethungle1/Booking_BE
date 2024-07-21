@@ -1,7 +1,7 @@
 package org.example.minitest1.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.example.minitest1.mapper.request.RoomMapper;
+import org.example.minitest1.mapper.request.RoomRequestMapper;
 import org.example.minitest1.model.Room;
 import org.example.minitest1.dto.request.room.RoomSaveRequest;
 import org.example.minitest1.repository.ReservationRepository;
@@ -19,7 +19,7 @@ public class RoomService implements IRoomService {
 
     private final RoomTypeService roomTypeService;
 
-    private final RoomMapper roomMapper;
+    private final RoomRequestMapper roomRequestMapper;
 
     @Override
     public List<Room> findAll() {
@@ -42,9 +42,9 @@ public class RoomService implements IRoomService {
         if (!roomToUpdate.getCode().equals(roomSaveRequest.getCode()) && validationRoomCode(roomSaveRequest)) {
             throw new RuntimeException("Room code already exists");
         }
-        roomMapper.update(roomSaveRequest, roomToUpdate);
+        roomRequestMapper.mapping(roomSaveRequest, roomToUpdate);
         roomToUpdate.setRoomType(roomTypeService.findById(roomSaveRequest.getRoomTypeId()));
-        return roomRepository.save(roomToUpdate);
+        return save(roomToUpdate);
     }
 
     @Override
@@ -53,9 +53,9 @@ public class RoomService implements IRoomService {
         if (check) {
             throw new RuntimeException("Room Code already exist");
         } else {
-            Room room = roomMapper.to(roomSaveRequest);
+            Room room = roomRequestMapper.to(roomSaveRequest);
             room.setRoomType(roomTypeService.findById(roomSaveRequest.getRoomTypeId()));
-           return roomRepository.save(room);
+           return save(room);
         }
     }
 

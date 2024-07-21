@@ -2,6 +2,7 @@ package org.example.minitest1.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.example.minitest1.dto.response.ReservationResponse;
 import org.example.minitest1.model.Reservation;
 import org.example.minitest1.dto.request.reservation.ReservationSaveRequest;
 import org.example.minitest1.service.impl.ReservationService;
@@ -19,17 +20,17 @@ public class ReservationController {
     private final ReservationService reservationService;
 
     @GetMapping
-    public ResponseEntity<List<Reservation>> findAll() {
+    public ResponseEntity<List<ReservationResponse>> getAllReservations() {
         return new ResponseEntity<>(reservationService.findAll(), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Reservation> findById(@PathVariable Long id) {
+    public ResponseEntity<Reservation> getReservationById(@PathVariable Long id) {
         return new ResponseEntity<>(reservationService.findById(id),HttpStatus.OK);
     }
 
     @PostMapping("/create")
-    public ResponseEntity<?> create(@RequestBody @Valid ReservationSaveRequest reservationSaveRequest) {
+    public ResponseEntity<?> createReservation(@RequestBody @Valid ReservationSaveRequest reservationSaveRequest) {
         try {
             return new ResponseEntity<>(reservationService.create(reservationSaveRequest),HttpStatus.CREATED);
         } catch (Exception e) {
@@ -38,7 +39,7 @@ public class ReservationController {
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody @Valid ReservationSaveRequest reservationSaveRequest) {
+    public ResponseEntity<?> updateReservation(@PathVariable Long id, @RequestBody @Valid ReservationSaveRequest reservationSaveRequest) {
         try {
             return new ResponseEntity<>(reservationService.update(id, reservationSaveRequest),HttpStatus.OK);
         } catch (Exception e) {
@@ -47,9 +48,8 @@ public class ReservationController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> delete(@PathVariable Long id) {
+    public ResponseEntity<?> deleteReservation(@PathVariable Long id) {
         reservationService.remove(id);
         return ResponseEntity.ok("Reservation deleted successfully");
     }
-
 }

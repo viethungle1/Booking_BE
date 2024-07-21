@@ -6,5 +6,5 @@ import org.example.minitest1.model.Reservation;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
-public interface ReservationMapper extends IMapper<Reservation, ReservationSaveRequest> {
+public interface ReservationRequestMapper extends IMapper<Reservation, ReservationSaveRequest> {
 }

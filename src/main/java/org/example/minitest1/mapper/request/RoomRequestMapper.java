@@ -6,5 +6,5 @@ import org.example.minitest1.model.Room;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
-public interface RoomMapper extends IMapper<Room, RoomSaveRequest> {
+public interface RoomRequestMapper extends IMapper<Room, RoomSaveRequest> {
 }

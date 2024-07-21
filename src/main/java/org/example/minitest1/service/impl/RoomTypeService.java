@@ -1,7 +1,7 @@
 package org.example.minitest1.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.example.minitest1.mapper.request.RoomTypeMapper;
+import org.example.minitest1.mapper.request.RoomTypeRequestMapper;
 import org.example.minitest1.model.RoomType;
 import org.example.minitest1.dto.request.roomtype.RoomTypeSaveRequest;
 import org.example.minitest1.repository.RoomRepository;
@@ -18,7 +18,7 @@ import java.util.List;
 public class RoomTypeService implements IRoomTypeService {
     private final RoomRepository roomRepository;
     private final RoomTypeRepository roomTypeRepository;
-    private final RoomTypeMapper roomTypeMapper;
+    private final RoomTypeRequestMapper roomTypeRequestMapper;
 
     @Override
     public List<RoomType> findAll() {
@@ -27,7 +27,7 @@ public class RoomTypeService implements IRoomTypeService {
 
     @Override
     public RoomType findById(Long id) {
-        return roomTypeRepository.findById(id).orElse(null);
+        return roomTypeRepository.findById(id).orElseThrow(() -> new RuntimeException("RoomType not found"));
     }
 
     @Override
@@ -45,8 +45,8 @@ public class RoomTypeService implements IRoomTypeService {
         if (check) {
             throw new RuntimeException("RoomType Code already exist");
         } else {
-            RoomType roomType = roomTypeMapper.to(roomTypeSaveRequest);
-            return roomTypeRepository.save(roomType);
+            RoomType roomType = roomTypeRequestMapper.to(roomTypeSaveRequest);
+            return save(roomType);
         }
     }
 
@@ -56,8 +56,8 @@ public class RoomTypeService implements IRoomTypeService {
         if (!roomTypeSaveRequest.getCode().equals(roomTypeToUpdate.getCode()) && validationRoomTypeCode(roomTypeSaveRequest) ) {
             throw new RuntimeException("RoomType code already exists");
         }
-        roomTypeMapper.update(roomTypeSaveRequest, roomTypeToUpdate);
-        return roomTypeRepository.save(roomTypeToUpdate);
+        roomTypeRequestMapper.mapping(roomTypeSaveRequest, roomTypeToUpdate);
+        return save(roomTypeToUpdate);
     }
 
     @Override
